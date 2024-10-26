@@ -85,6 +85,8 @@ def plot_incidence(site="",plt_dir=os.path.join(manifest.simulation_output_filep
     sim_cases = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site,"ClinicalIncidence_monthly.csv"))
     # filter to age of interest
     sim_cases = sim_cases[sim_cases['agebin']==agebin]
+    # filter to best param_set
+    sim_cases = sim_cases[sim_cases['Sample_ID']==best]
     # get mean population and clinical cases by month, year, and Sample_ID
     sim_cases['Inc'] = sim_cases['Cases'] / sim_cases['Pop']
     sim_cases=sim_cases.merge(sim_cases.groupby(['Sample_ID','Year'])['Inc'].agg(np.nanmax).reset_index(name='max_simincd'), on=['Sample_ID',"Year"],how='left').reset_index()
@@ -94,7 +96,7 @@ def plot_incidence(site="",plt_dir=os.path.join(manifest.simulation_output_filep
     # merge simulated normalized monthly incidence with reference data on ['month']
     case_df = case_df.merge(rcases, on ='month')
     case_df = case_df.dropna(subset=['norm_simincd']).reset_index()
-    case_df = case_df[case_df['Sample_ID']==best]
+    
     
     # Plot normalized incidence curve vs. reference data
     plt.figure(figsize=(6, 6), dpi=300, tight_layout=True)        

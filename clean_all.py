@@ -2,6 +2,7 @@
 # standard packages
 import os
 import re
+import sys
 # from source 'simulations' directory
 sys.path.append("../simulations")
 import manifest as manifest

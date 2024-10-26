@@ -4,6 +4,7 @@ import argparse
 import pathlib
 import shutil
 import os
+import sys
 import emod_malaria.bootstrap as dtk
 # from source 'simulations' directory
 sys.path.append("../simulations")

@@ -3,6 +3,7 @@
 import argparse
 import re
 import os
+import sys
 from importlib.metadata import version
 from idmtools.core.platform_factory import Platform
 from idmtools.core import ItemType

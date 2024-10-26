@@ -17,6 +17,7 @@ from datetime import timedelta
 sns.set_context("talk")
 sns.set_style("white")
 # from within compare_to_data
+sys.path.append(os.path.dirname(__file__))
 from calculate_all_scores import  compute_all_scores, load_case_data
 # from within environment_calibration_common submodule
 sys.path.append('../')

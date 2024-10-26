@@ -7,6 +7,7 @@ from idmtools.analysis.analyze_manager import AnalyzeManager
 from idmtools.core import ItemType
 import pandas as pd
 # from within analyzers/
+sys.path.append(os.path.dirname(__file__))
 from analyzer_collection import (
     EventReporterAnalyzer,
     MonthlyPfPRAnalyzer,

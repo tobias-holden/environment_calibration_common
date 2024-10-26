@@ -19,7 +19,7 @@ sns.set_style("white")
 # from within compare_to_data
 sys.path.append(os.path.dirname(__file__))
 from calculate_all_scores import  compute_all_scores, load_case_data
-# from within environment_calibration_common submodule
+# from .within environment_calibration_common submodule
 sys.path.append('../')
 from helpers import load_coordinator_df
 # from source 'simulations' directory

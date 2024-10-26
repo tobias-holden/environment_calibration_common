@@ -118,8 +118,8 @@ def shell_header_quest(A='b1139', p='b1139', t='02:00:00', N=1,
                        ntasks_per_node=1, mem=8000, job_name='myjob',
                        arrayJob=None, c=1, node_spec=None):
     """Requires a 'logs' subfolder to write in .err and .out files, alternatively logs/ needs to be removed"""
-    if not os.path.exists('log'):
-        os.makedirs(os.path.join('log'))
+    if not os.path.exists('../simulations/log'):
+        os.makedirs(os.path.join('../simulations/log'))
    
     header = f'#!/bin/bash\n' \
              f'#SBATCH -A {A}\n' \
@@ -134,25 +134,26 @@ def shell_header_quest(A='b1139', p='b1139', t='02:00:00', N=1,
         constraint = f'#SBATCH --constraint={node_spec}\n'
     if arrayJob is not None:
         array = arrayJob
-        err = '#SBATCH --error=log/slurm_%A_%a.err\n'
-        out = '#SBATCH --output=log/slurm_%A_%a.out\n'
+        err = '#SBATCH --error=../simulations/log/slurm_%A_%a.err\n'
+        out = '#SBATCH --output=../simulations/log/slurm_%A_%a.out\n'
         header = header + array + err + out #+ constraint
     else:
-        err = f'#SBATCH --error=log/{job_name}.%j.err\n'
-        out = f'#SBATCH --output=log/{job_name}.%j.out\n'
+        err = f'#SBATCH --error=../simulations/log/{job_name}.%j.err\n'
+        out = f'#SBATCH --output=../simulations/log/{job_name}.%j.out\n'
         header = header + err + out #+ constraint
     return header
         
 def submit_scheduled_analyzer(experiment, platform, site, analyzer_script, mem=20000):
-    wdir = os.path.abspath(os.path.dirname(__file__))
+    #wdir = os.path.abspath(os.path.dirname(__file__))
+    wdir =  os.path.abspath(path.join(__file__ ,"../simulations"))
     ## Write bash file to submit
     header_post = shell_header_quest(job_name=f'analyze_exp', t='06:00:00', mem=mem, c='8')
     pymodule = '\n\nmodule purge all' \
     ### pycommand(s) - additional python or R scripts to directly run after analyzer can be added below
     pycommand = f'\n/projects/b1139/environments/emodpy-torch/bin/python {analyzer_script} --site {site} --expid {experiment.id}' 
     
-    if not os.path.exists('analyzers/batch'):
-        os.makedirs(os.path.join('analyzers/batch'))    
+    # if not os.path.exists('analyzers/batch'):
+    #     os.makedirs(os.path.join('analyzers/batch'))    
     
     file = open(os.path.join(wdir,f'run_analyzer_{experiment.uid}.sh'), 'w') #'analyzers','batch',
     file.write(header_post + pymodule + pycommand)

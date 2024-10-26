@@ -145,7 +145,7 @@ def shell_header_quest(A='b1139', p='b1139', t='02:00:00', N=1,
         
 def submit_scheduled_analyzer(experiment, platform, site, analyzer_script, mem=20000):
     #wdir = os.path.abspath(os.path.dirname(__file__))
-    wdir =  os.path.abspath(os.path.join(__file__ ,"../simulations"))
+    wdir =  os.path.abspath(os.path.join(__file__ ,"../../simulations"))
     ## Write bash file to submit
     header_post = shell_header_quest(job_name=f'analyze_exp', t='06:00:00', mem=mem, c='8')
     pymodule = '\n\nmodule purge all' \

@@ -52,7 +52,6 @@ def analyze_experiment(platform, expid, wdir):
         prevalence_start = int(prevalence_df['year'].min()) - sim_start_year
         prevalence_end = int(prevalence_df['year'].max()) - sim_start_year
         if(coord_df.at['prevalence_comparison_diagnostic','value']=="PCR"):
-            print("pass")
             analyzers.append(InsetChartAnalyzer(sweep_variables=sweep_variables,
                                                 working_dir=wdir,
                                                 start_day=prevalence_start*365,

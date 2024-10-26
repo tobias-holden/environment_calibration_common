@@ -68,6 +68,29 @@ def compare_all_age_PCR_prevalence(site):
     # get average score by sample_id
     score3 = score3.groupby('Sample_ID').agg(prevalence_score=('prevalence_score','mean')).reset_index()
     return score3
+  
+def compare_PfPR_prevalence(site,agebin):
+    #### SCORE - Monthly PCR Parasite Prevalence ####
+    #################################################
+    # load reference data
+    refpfpr = load_prevalence_data(site)
+    refpfpr = refpfpr[refpfpr['agebin'] == agebin]
+    # convert reference_pcr 'year' to start at 0, like simulations
+    refpcr['year'] = [(y - start_year) for y in refpcr['year']]
+    sim_pfpr = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site,"PfPR_monthly.csv"))
+    # filter to age of interest
+    sim_pfpr = sim_pfpr[sim_pfpr['agebin']==agebin]
+    # get mean PfPR by month, year, and Sample_ID across runs
+    sim_pfpr = sim_pfpr.groupby(['Sample_ID', 'month','year'])['prevalence'].agg(np.nanmean).reset_index()
+    sim_pfpr = sim_pfpr[['year','month','Sample_ID','prevalence']]
+    # merge simulated normalized monthly incidence with reference data on ['month']
+    score = sim_pfpr.merge(refpfpr, on =['month','year'], how="left")
+    # score as sqrt(|diff|)
+    score['prevalence_score'] = score.apply(lambda row: sqrt(abs(row['prevalence']-row['ref_prevalence'])**2), axis=1)
+    # get average score by sample_id
+    score = score.groupby('Sample_ID').agg(prevalence_score=('prevalence_score','mean')).reset_index()
+    return score
+
 
 def check_EIR_threshold(site):
     ic = prepare_inset_chart_data(site)

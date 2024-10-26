@@ -134,12 +134,12 @@ def shell_header_quest(A='b1139', p='b1139', t='02:00:00', N=1,
         constraint = f'#SBATCH --constraint={node_spec}\n'
     if arrayJob is not None:
         array = arrayJob
-        err = '#SBATCH --error=../simulations/log/slurm_%A_%a.err\n'
-        out = '#SBATCH --output=../simulations/log/slurm_%A_%a.out\n'
+        err = '#SBATCH --error=log/slurm_%A_%a.err\n'
+        out = '#SBATCH --output=log/slurm_%A_%a.out\n'
         header = header + array + err + out #+ constraint
     else:
-        err = f'#SBATCH --error=../simulations/log/{job_name}.%j.err\n'
-        out = f'#SBATCH --output=../simulations/log/{job_name}.%j.out\n'
+        err = f'#SBATCH --error=log/{job_name}.%j.err\n'
+        out = f'#SBATCH --output=log/{job_name}.%j.out\n'
         header = header + err + out #+ constraint
     return header
         

@@ -5,7 +5,7 @@ import os
 import argparse
 from idmtools.core.platform_factory import Platform
 # from within environment_calibration_common submodule
-from helpers import get_comps_id_filename, load_coordinator_df
+from .helpers import get_comps_id_filename, load_coordinator_df
 from analyzers.analyze import analyze_experiment
 # from source 'simulations' directory
 sys.path.append("../simulations")

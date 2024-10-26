@@ -1,5 +1,5 @@
 ##### Import required packages #####
-from helpers import generate_demographics, extract_climate
+from .helpers import generate_demographics, extract_climate
 
 if __name__ == '__main__':
     print("CREATING DEMOGRAPHICS")

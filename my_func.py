@@ -6,10 +6,10 @@ import time
 import pandas as pd
 import numpy as np
 # from within environment_calibration_common submodule
-from helpers import load_coordinator_df
-from translate_parameters import translate_parameters, get_initial_samples
-from run_sims import submit_sim
-from get_eradication import get_eradication
+from .helpers import load_coordinator_df
+from .translate_parameters import translate_parameters, get_initial_samples
+from .run_sims import submit_sim
+from .get_eradication import get_eradication
 from compare_to_data.run_full_comparison import compute_scores_across_site
 # from source 'simulations' directory
 sys.path.append("../simulations")

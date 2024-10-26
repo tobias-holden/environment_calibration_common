@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
+##### Import required packages #####
+# standard packages
 import argparse
 import pathlib
 import shutil
 import os
-
-# emod_malaria
 import emod_malaria.bootstrap as dtk
-
+# from source 'simulations' directory
+sys.path.append("../simulations")
 import manifest as manifest
 
 

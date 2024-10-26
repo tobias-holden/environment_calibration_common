@@ -1,3 +1,5 @@
+##### Import required packages #####
+# standard packages
 from emodpy_malaria.interventions.drug_campaign import add_drug_campaign
 from emodpy_malaria.interventions.vaccine import add_scheduled_vaccine, add_triggered_vaccine
 from emodpy_malaria.malaria_config import set_drug_param

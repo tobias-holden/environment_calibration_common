@@ -1,12 +1,14 @@
+##### Import required packages #####
+# standard packages
 import argparse
 import re
 import os
 from importlib.metadata import version
-
-import manifest as manifest
-
 from idmtools.core.platform_factory import Platform
 from idmtools.core import ItemType
+# from source 'simulations' directory
+sys.path.append("../simulations")
+import manifest
 
 
 def re_search(regex, line):

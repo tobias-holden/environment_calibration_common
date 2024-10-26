@@ -1,11 +1,15 @@
+##### Import required packages #####
+# standard packages
 import sys
-sys.path.append('../')
 import os
 import argparse
-import manifest as manifest
-from helpers import get_comps_id_filename, load_coordinator_df
 from idmtools.core.platform_factory import Platform
+# from within environment_calibration_common submodule
+from helpers import get_comps_id_filename, load_coordinator_df
 from analyzers.analyze import analyze_experiment
+# from source 'simulations' directory
+sys.path.append("../simulations")
+import manifest as manifest
 
 def run_analyzers(site: str, expid: str = None, characteristic: bool = False) -> (bool, str):
     """

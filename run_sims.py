@@ -1,22 +1,23 @@
-#!/usr/bin/env python3
+##### Import required packages #####
+# standard packages
 import argparse
 import numpy as np
 import os
 from functools import \
     partial 
-
-# idmtools
 from idmtools.builders import SimulationBuilder
 from idmtools.core.platform_factory import Platform
 from idmtools.entities.experiment import Experiment
-# emodpy
 from emodpy.emod_task import EMODTask
+import sys
+# from within environment_calibration_common submodule
 from helpers import set_param_fn, update_sim_random_seed, build_demog, set_simulation_scenario_for_characteristic_site, \
     set_simulation_scenario_for_matched_site, get_comps_id_filename, add_outputs, add_calib_param_func,extract_climate,\
     generate_demographics
 from utils_slurm import submit_scheduled_analyzer
+# from source 'simulations' directory
+sys.path.append("../simulations")
 import manifest as manifest
-import sys
 
 def submit_sim(site=None, nSims=1, characteristic=False, priority=manifest.priority, my_manifest=manifest,
                not_use_singularity=False, X=None):

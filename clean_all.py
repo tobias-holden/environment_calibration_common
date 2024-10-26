@@ -1,6 +1,10 @@
+##### Import required packages #####
+# standard packages
 import os
 import re
-import manifest
+# from source 'simulations' directory
+sys.path.append("../simulations")
+import manifest as manifest
 
 def clean_analyzers():
     for file in os.listdir(manifest.CURRENT_DIR):

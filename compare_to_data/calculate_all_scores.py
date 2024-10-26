@@ -1,24 +1,27 @@
+##### Import required packages #####
+# standard packages
 import sys
-sys.path.append('../')
 from math import sqrt, exp
 import os
 from statistics import mean
 import numpy as np
 import pandas as pd
 import warnings
+from datetime import datetime
+import math
+from scipy.special import gammaln
 from pandas.errors import SettingWithCopyWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=SettingWithCopyWarning)
 pd.options.mode.chained_assignment = None  # default='warn'
+# from within environment_calibration_common submodule
+sys.path.append("../")
+from load_inputs import load_sites
+from helpers import load_coordinator_df
+# from source 'simulations' directory
+sys.path.append("../../simulations")
+import manifest
 
-from simulations import manifest
-
-from simulations.load_inputs import load_sites
-from simulations.helpers import load_coordinator_df
-from datetime import datetime
-
-import math
-from scipy.special import gammaln
 
 coord_df = load_coordinator_df(characteristic=False, set_index=True)
 

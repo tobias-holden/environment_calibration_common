@@ -1,5 +1,6 @@
+##### Import required packages #####
+# standard packages
 import sys
-sys.path.append('../')
 import numpy as np
 import warnings
 import pandas as pd
@@ -8,18 +9,22 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=SettingWithCopyWarning)
 pd.options.mode.chained_assignment = None  # default='warn'
 import os
-import manifest as manifest
 from matplotlib import pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
 from datetime import datetime
 from datetime import timedelta
-from helpers import load_coordinator_df
-
 sns.set_context("talk")
 sns.set_style("white")
+# from within compare_to_data
+from calculate_all_scores import  compute_all_scores, load_case_data
+# from within environment_calibration_common submodule
+sys.path.append('../')
+from helpers import load_coordinator_df
+# from source 'simulations' directory
+sys.path.append("../../simulations")
+import manifest as manifest
 
-from compare_to_data.calculate_all_scores import  compute_all_scores, load_case_data
 
 def compute_scores_across_site(site):
     # Compute all scores

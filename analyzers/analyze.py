@@ -1,13 +1,13 @@
+##### Import required packages #####
+# standard packages
 import argparse
 import os
 import sys
 from idmtools.analysis.analyze_manager import AnalyzeManager
 from idmtools.core import ItemType
-sys.path.append("../")
-import manifest
-from helpers import load_coordinator_df
 import pandas as pd
-from analyzers.analyzer_collection import (
+# from within analyzers/
+from analyzer_collection import (
     EventReporterAnalyzer,
     MonthlyPfPRAnalyzer,
     MonthlyIncidenceAnalyzer,
@@ -18,6 +18,14 @@ from analyzers.analyzer_collection import (
     NodeDemographicsAnalyzer,
     VectorStatsAnalyzer
 )
+# from within environment_calibration_common submodule
+sys.path.append("../")
+from helpers import load_coordinator_df
+
+# from source 'simulations' directory
+sys.path.append("../../simulations")
+import manifest
+
 
 def parse_args():
     parser = argparse.ArgumentParser()

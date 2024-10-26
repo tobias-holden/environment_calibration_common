@@ -1,4 +1,6 @@
-from simulations.helpers import load_coordinator_df
+##### Import required packages #####
+# from within environment_calibration_common submodule
+from helpers import load_coordinator_df
 
 
 def load_sites():

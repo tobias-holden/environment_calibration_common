@@ -1,14 +1,18 @@
-#File My Not Be Needed.
+##### Import required packages #####
+# standard packages
 import argparse
 import os
-import manifest
 from idmtools.analysis.analyze_manager import AnalyzeManager
 from idmtools.core import ItemType
 from idmtools.core.platform_factory import Platform
 
+# from within analyzers/
 from analyzer_collection import (EventReporterAnalyzer, 
                                 MonthlyPfPRAnalyzer,
                                 InsetChartAnalyzer)
+# from source 'simulations' directory
+sys.path.append("../../simulations")
+import manifest
 
 def parse_args():
     parser = argparse.ArgumentParser()

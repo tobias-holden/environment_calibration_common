@@ -1,3 +1,5 @@
+##### Import required packages #####
+# standard packages
 import os
 import pandas as pd
 from idmtools.entities import IAnalyzer

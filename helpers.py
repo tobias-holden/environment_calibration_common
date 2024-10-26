@@ -1,6 +1,12 @@
+##### Import required packages #####
+# standard packages
 import os
 import json
 import itertools
+import pandas as pd
+import warnings
+import numpy as np
+from datetime import datetime
 from functools import partial
 import emod_api.config.default_from_schema_no_validation as dfs
 import emod_api.demographics.Demographics as Demog
@@ -17,12 +23,12 @@ from emodpy_malaria.reporters.builtin import (
     add_report_node_demographics,
     add_report_vector_stats
 )
+# from within environment_calibration_common submodule
 from malaria_vaccdrug_campaigns import add_vaccdrug_campaign
-import pandas as pd
+# from source 'simulations' directory
+sys.path.append("../simulations")
 import manifest
-import warnings
-import numpy as np
-from datetime import datetime
+
 
 def day_of_year(month, day, year):
     """

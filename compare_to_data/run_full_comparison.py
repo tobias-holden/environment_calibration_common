@@ -17,7 +17,7 @@ from datetime import timedelta
 sns.set_context("talk")
 sns.set_style("white")
 # from within compare_to_data
-from .calculate_all_scores import  compute_all_scores, load_case_data
+from calculate_all_scores import  compute_all_scores, load_case_data
 # from within environment_calibration_common submodule
 sys.path.append('../')
 from helpers import load_coordinator_df

@@ -11,10 +11,10 @@ from idmtools.entities.experiment import Experiment
 from emodpy.emod_task import EMODTask
 import sys
 # from within environment_calibration_common submodule
-from .helpers import set_param_fn, update_sim_random_seed, build_demog, set_simulation_scenario_for_characteristic_site, \
+from helpers import set_param_fn, update_sim_random_seed, build_demog, set_simulation_scenario_for_characteristic_site, \
     set_simulation_scenario_for_matched_site, get_comps_id_filename, add_outputs, add_calib_param_func,extract_climate,\
     generate_demographics
-from .utils_slurm import submit_scheduled_analyzer
+from utils_slurm import submit_scheduled_analyzer
 # from source 'simulations' directory
 sys.path.append("../simulations")
 import manifest as manifest

@@ -7,7 +7,7 @@ from idmtools.core import ItemType
 from idmtools.core.platform_factory import Platform
 
 # from within analyzers/
-from .analyzer_collection import (EventReporterAnalyzer, 
+from analyzer_collection import (EventReporterAnalyzer, 
                                 MonthlyPfPRAnalyzer,
                                 InsetChartAnalyzer)
 # from source 'simulations' directory

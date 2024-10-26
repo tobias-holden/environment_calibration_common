@@ -112,6 +112,8 @@ def set_param_fn(config):
     config.parameters.Relative_Humidity_Filename = os.path.join(
         "climate", "relative_humidity_daily.bin"
     )
+    config.parameters.Enable_Demographics_Birth = 1
+    config.parameters.Enable_Natural_Mortality = 1
     config.parameters.Custom_Individual_Events = ["Received_Treatment","Received_SMC","Bednet_Using","Bednet_Discarded","Bednet_Got_New_One"]
     return config
 

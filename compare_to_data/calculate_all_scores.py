@@ -111,7 +111,7 @@ def compare_incidence_shape(site,agebin):
     case_df = case_df[case_df['age']==agebin]
     # convert case_df 'year' to start at 0, like simulations
     case_df['year'] = [(y - start_year) for y in case_df['year']]
-    print(case_df)
+    #print(case_df)
     # find max incidence by year    
     case_df=case_df.merge(case_df.groupby('year')['case'].agg(np.nanmax).reset_index(name='max_incd'), on='year',how='left')
     # normalize monthly incidence so each year maxes at 1

@@ -33,7 +33,7 @@ def compute_scores_across_site(site):
     incidence_agebin=int(coord_df.at['incidence_comparison_agebin','value'])
     scores = compute_all_scores(site,incidence_agebin=incidence_agebin)
     # Load weighting rules
-    weights = pd.read_csv(os.path.join(manifest.input_files_path,"my_weights.csv"),index_col=0)
+    weights = pd.read_csv(os.path.join(manifest.input_files_path,"weights.csv"),index_col=0)
     
     ### Assume EIR Score is included ###
     scores['eir_score'] = [float(weights.at['eir_score','weight'])*val for val in scores['eir_score']]

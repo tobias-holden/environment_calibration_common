@@ -11,6 +11,10 @@ from COMPS.Data import QueryCriteria, Simulation
 from idmtools.core import ItemType
 from idmtools.entities.iplatform import IPlatform
 from idmtools_platform_slurm.slurm_operations.operations_interface import SlurmOperations
+# from source 'simulations' directory
+sys.path.append("../simulations")
+import manifest
+
 
 def _get_serialized_filenames(num_cores, timesteps):
     if num_cores == 1:
@@ -150,7 +154,7 @@ def submit_scheduled_analyzer(experiment, platform, site, analyzer_script, mem=2
     header_post = shell_header_quest(job_name=f'analyze_exp', t='06:00:00', mem=mem, c='8')
     pymodule = '\n\nmodule purge all' \
     ### pycommand(s) - additional python or R scripts to directly run after analyzer can be added below
-    pycommand = f'\n/projects/b1139/environments/emodpy-torch/bin/python {analyzer_script} --site {site} --expid {experiment.id}' 
+    pycommand = f'\n{manifest.VENV_PATH}/bin/python {analyzer_script} --site {site} --expid {experiment.id}' 
     
     # if not os.path.exists('analyzers/batch'):
     #     os.makedirs(os.path.join('analyzers/batch'))    

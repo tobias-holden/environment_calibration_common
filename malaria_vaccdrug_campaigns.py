@@ -131,7 +131,7 @@ def add_vaccdrug_campaign(campaign,campaign_type: str = 'SMC', start_days: list 
 
     if campaign_type == 'SMC':
         if receiving_drugs_event:
-            add_vaccdrug_smc(config,campaign,start_days=start_days, coverages=coverages,
+            add_vaccdrug_smc(campaign,start_days=start_days, coverages=coverages,
                              vaccine_param_dict=vaccine_param_dict, drug_param_dict=drug_param_dict,
                              target_group=target_group,
                              receiving_drugs_event=receiving_drugs_event_name,
@@ -182,21 +182,21 @@ def add_vaccdrug_campaign(campaign,campaign_type: str = 'SMC', start_days: list 
         raise ValueError('Invalid campaign_type specified, valid options: "SMC" or "PMC"')
 
 
-def make_vehicle_drug(config,drug_box_day: float = 0, drug_irbc_killing: float = 0, drug_hep_killing: float = 0):
+def make_vehicle_drug(drug_box_day: float = 0, drug_irbc_killing: float = 0, drug_hep_killing: float = 0):
     if drug_box_day:
-        set_drug_param(config,drug_name="Vehicle",parameter="Drug_Decay_T1",value=drug_box_day)
-        set_drug_param(config, "Vehicle", "Drug_Decay_T2", drug_box_day)
+        set_drug_param(drug_name="Vehicle",parameter="Drug_Decay_T1",value=drug_box_day)
+        set_drug_param(drug_name="Vehicle",parameter="Drug_Decay_T2",value=drug_box_day)
     if drug_irbc_killing:
-        set_drug_param(config,"Vehicle", "Max_Drug_IRBC_Kill", drug_irbc_killing)
+        set_drug_param(drug_name="Vehicle",parameter="Max_Drug_IRBC_Kill",value=drug_irbc_killing)
     if drug_hep_killing:
-        set_drug_param(config,"Vehicle", "Drug_Hepatocyte_Killrate", drug_hep_killing)
+        set_drug_param(drug_name="Vehicle",parameter="Drug_Hepatocyte_Killrate",value=drug_hep_killing)
 
     return {'drug_box_day': drug_box_day,
             'drug_irbc_killing': drug_irbc_killing,
             'drug_hep_killing': drug_hep_killing}
 
 
-def add_vaccdrug_smc(config,campaign,start_days: list, coverages: list,
+def add_vaccdrug_smc(campaign,start_days: list, coverages: list,
                      target_group: dict = None,
                      node_ids: list = None,
                      vaccine_param_dict: dict = None, drug_param_dict: dict = None,
@@ -291,7 +291,7 @@ def add_vaccdrug_smc(config,campaign,start_days: list, coverages: list,
     drug_box_day = drug_param_dict['drug_box_day']
     drug_irbc_killing = drug_param_dict['drug_irbc_killing']
     drug_hep_killing = drug_param_dict['drug_hep_killing']
-    make_vehicle_drug(config,drug_box_day=drug_box_day, drug_irbc_killing=drug_irbc_killing,
+    make_vehicle_drug(drug_box_day=drug_box_day, drug_irbc_killing=drug_irbc_killing,
                       drug_hep_killing=drug_hep_killing)
 
     for (d, cov) in zip(start_days, coverages):
@@ -437,7 +437,7 @@ def add_vaccdrug_pmc(campaign, start_days: list, coverages: list,
     drug_box_day = drug_param_dict['drug_box_day']
     drug_irbc_killing = drug_param_dict['drug_irbc_killing']
     drug_hep_killing = drug_param_dict['drug_hep_killing']
-    make_vehicle_drug(config,drug_box_day=drug_box_day, drug_irbc_killing=drug_irbc_killing,
+    make_vehicle_drug(drug_box_day=drug_box_day, drug_irbc_killing=drug_irbc_killing,
                       drug_hep_killing=drug_hep_killing)
 
     pmc_touchpoints = list(target_group.values())

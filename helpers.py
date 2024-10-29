@@ -25,7 +25,7 @@ from emodpy_malaria.reporters.builtin import (
     add_report_vector_stats
 )
 # from within environment_calibration_common submodule
-from malaria_vaccdrug_campaigns import add_vaccdrug_campaign
+#from malaria_vaccdrug_campaigns import add_vaccdrug_campaign
 # from source 'simulations' directory
 sys.path.append("../simulations")
 import manifest
@@ -115,6 +115,14 @@ def set_param_fn(config):
     config.parameters.Enable_Demographics_Birth = 1
     config.parameters.Enable_Natural_Mortality = 1
     config.parameters.Custom_Individual_Events = ["Received_Treatment","Received_SMC","Bednet_Using","Bednet_Discarded","Bednet_Got_New_One"]
+    
+    # SMC parameters
+    drug_param_dict = {'drug_box_day': 2.0, 'drug_irbc_killing': 10.8, 'drug_hep_killing': 3.64}
+    drug_box_day = drug_param_dict['drug_box_day']
+    drug_irbc_killing = drug_param_dict['drug_irbc_killing']
+    drug_hep_killing = drug_param_dict['drug_hep_killing']
+    make_vehicle_drug(config,drug_box_day=drug_box_day, drug_irbc_killing=drug_irbc_killing,
+                      drug_hep_killing=drug_hep_killing)
     return config
 
 
@@ -328,8 +336,139 @@ def build_standard_campaign_object(manifest):
     campaign.set_schema(manifest.schema_file)
     return campaign
 
+def make_vehicle_drug(config,drug_box_day: float = 0, drug_irbc_killing: float = 0, drug_hep_killing: float = 0):
+    if drug_box_day:
+        set_drug_param(drug_name="Vehicle",parameter="Drug_Decay_T1",value=drug_box_day)
+        set_drug_param(drug_name="Vehicle",parameter="Drug_Decay_T2",value=drug_box_day)
+    if drug_irbc_killing:
+        set_drug_param(drug_name="Vehicle",parameter="Max_Drug_IRBC_Kill",value=drug_irbc_killing)
+    if drug_hep_killing:
+        set_drug_param(drug_name="Vehicle",parameter="Drug_Hepatocyte_Killrate",value=drug_hep_killing)
 
-def build_camp(config,site, coord_df=None):
+    return {'drug_box_day': drug_box_day,
+            'drug_irbc_killing': drug_irbc_killing,
+            'drug_hep_killing': drug_hep_killing}
+
+
+def add_vaccdrug_smc(campaign,start_days: list, coverages: list,
+                     target_group: dict = None,
+                     node_ids: list = None,
+                     receiving_vaccine_event: str = None, receiving_drugs_event: str = None,
+                     listening_duration: int = -1, trigger_condition_list: list = None,
+                     ind_property_restrictions: dict = None,
+                     target_residents_only: int = 1,
+                     check_eligibility_at_trigger: bool = False):
+    """
+        Add a vaccine + vehicle drug intervention to approximate efficacy of SMC. This intervention uses default
+        parameters corresponding to SMC with SPAQ, if not otherwise specified via vaccine_param_dict and drug_param_dict.
+        The vehicle drug instantly clear parasites (blood stage + liver stage) and the prophylactic effect is added
+        by the vaccine event.
+
+        Campaign type specifications:
+        For SMC, the drug event (MDA drug campaign) is initiated at the specified simdays and generates a broadcast event
+        that is used to trigger the vaccine event without delay.
+
+    Args:
+        campaign: campaign object to which the intervention will be added, and schema_path container
+        start_days: list of days on which to run the interventions
+        coverages: list of coverages for each day in start_days
+        target_group: A dictionary of to specify age range for SMC
+            Default is Everyone.
+
+             Example::
+
+                 {'agemin': x, 'agemax': y} for campaign_type = SMC
+
+        node_ids: The list of nodes to apply this intervention to (**Node_List**
+            parameter). If not provided, set value of NodeSetAll.
+        receiving_vaccine_event:  Event to send out when person received vaccine.
+            Default: 'Received_<campaign_type>_VaccDrug'
+        receiving_drugs_event: Event to send out when person received drugs.
+            Event name needs to include 'Received_Vehicle' in it, as otherwise overwritten in drug_campaigns function
+            (see drug_campaigns.py L247)
+            Default: SMC: 'Received_Vehicle'
+        listening_duration: Length of time, in days, for which the triggered event will be listening for the triggers
+        trigger_condition_list: List of events that will begin a triggerable
+            campaign if campaign_type is SMC. If campaign_type is PMC, campaign is triggered by birth per default.
+        ind_property_restrictions:  List of IndividualProperty key:value pairs that
+            individuals must have to receive the diagnostic intervention.
+            For example, ``[{"IndividualProperty1":"PropertyValue1"},
+            {"IndividualProperty2":"PropertyValue2"}]``. Default is no restrictions.
+        target_residents_only: When set to True the intervention is only distributed to individuals that began the
+            simulation in that node.
+        check_eligibility_at_trigger: If triggered event is delayed, you have an
+            option to check individual/node's eligibility at the initial trigger
+            or when the event is actually distributed after delay. (for example, a person might've aged out of the
+            intervention before the initial trigger and the intervention distribution)
+        receiving_drugs_event_name: Event to send out when person received drugs.
+            Event name needs to include 'Received_Vehicle' in it, as otherwise overwritten in drug_campaigns function
+            (see drug_campaigns.py L247)
+            Default: SMC: 'Received_Vehicle'; PMC: 'Received_Vehicle_X' with X being number of PMC dose
+        num_iiv_groups: Number of individual drug response groups.
+            If >1, ind_property_restrictions is set to {'DrugResponseGroup': val} if campaign_type = PMC, not used for
+            SMC. Default: SMC: Not used; PMC: 1, IIV only acts on the vaccine event, not the drug event
+        receiving_drugs_event: Specify whether to deploy the parasite clearing drug event or the vaccine event only.
+            Default: True
+            Exception: for PMC, set to False
+
+    Returns:
+        dictionary of tags
+    """
+    if len(start_days) != len(coverages):
+        raise ValueError(f"Length of start_days - {len(start_days)}, should be equal to length of coverages - "
+                         f"{len(coverages)}, but it's not.\n")
+    
+    vaccine_param_dict = {'vacc_initial_effect': 0.598, 'vacc_box_duration': 21.7, 'vacc_decay_duration': 1.18}
+    vaccine_initial_effect = vaccine_param_dict['vacc_initial_effect']
+    vaccine_box_duration = vaccine_param_dict['vacc_box_duration']
+    vaccine_decay_duration = vaccine_param_dict['vacc_decay_duration']
+    
+    target_age_min = 0
+    target_age_max = 125
+    if target_group:
+        target_age_min = target_group['agemin']
+        target_age_max = target_group['agemax']
+
+    for (d, cov) in zip(start_days, coverages):
+        add_drug_campaign(campaign, campaign_type='MDA',
+                          drug_code='Vehicle',
+                          start_days=[d + 1],  # when triggered and triggering interventions are deployed on the
+                          # same day, that-day events are not "heard" by the triggered intervention, so I'm
+                          # off-setting them by one day
+                          coverage=cov,
+                          repetitions=-1,
+                          tsteps_btwn_repetitions=-1,
+                          listening_duration=listening_duration,
+                          target_group=target_group,
+                          ind_property_restrictions=ind_property_restrictions,
+                          receiving_drugs_event_name=receiving_drugs_event,
+                          trigger_condition_list=trigger_condition_list,
+                          target_residents_only=target_residents_only,
+                          node_ids=node_ids,
+                          check_eligibility_at_trigger=check_eligibility_at_trigger)
+
+    add_triggered_vaccine(campaign,
+                          start_day=start_days[0],  # otherwise it won't "hear" the first round of drugs
+                          demographic_coverage=1,
+                          trigger_condition_list=[receiving_drugs_event],
+                          listening_duration=listening_duration,
+                          target_age_min=target_age_min,
+                          target_age_max=target_age_max,
+                          node_ids=node_ids,
+                          ind_property_restrictions=ind_property_restrictions,
+                          intervention_name="RTSS",
+                          vaccine_type="AcquisitionBlocking",
+                          vaccine_initial_effect=vaccine_initial_effect,
+                          vaccine_box_duration=vaccine_box_duration,
+                          vaccine_decay_time_constant=vaccine_decay_duration / math.log(2),
+                          efficacy_is_multiplicative=True,
+                          broadcast_event=receiving_vaccine_event)
+
+    return {'smc_cov': sum(coverages) / len(coverages),
+            'total_smc_rounds': len(coverages)}
+
+
+def build_camp(site, coord_df=None):
     """
     Build a campaign input file for the DTK using emod_api.
     Right now this function creates the file and returns the filename. If calling code just needs an asset that's fine.
@@ -367,8 +506,7 @@ def build_camp(config,site, coord_df=None):
     else:
         smc_df = pd.DataFrame()
     if not smc_df.empty:
-        # smc for children under 5 (and some leak into 5 year-olds at 50% of the 0-5 coverage)
-        add_smc(config,camp,smc_df)
+        add_smc(camp,smc_df)
 
     # ITNS
     itn_df = pd.DataFrame()
@@ -384,6 +522,10 @@ def build_camp(config,site, coord_df=None):
         add_itns(camp,itn_df,itn_age,itn_season)
 
     return camp
+
+
+
+
 
 def set_simulation_scenario(simulation, site, csv_path):
     # get information on this simulation setup from coordinator csv
@@ -429,7 +571,7 @@ set_simulation_scenario_for_matched_site = partial(set_simulation_scenario, csv_
 set_simulation_scenario_for_characteristic_site = partial(set_simulation_scenario, csv_path=manifest.sweep_sim_coordinator_path)
 
 
-def add_smc(config,camp,smc_df):
+def add_smc(camp,smc_df):
     coord_df=load_coordinator_df(characteristic=False, set_index=True)
     sim_start_yr = int(coord_df.at['simulation_start_year','value'])
     for r, row in smc_df.iterrows():
@@ -437,12 +579,11 @@ def add_smc(config,camp,smc_df):
          smc_month=int(row['month'])
          smc_day=int(row['day'])
          smc_start = smc_year*365 + day_of_year(smc_month,smc_day,smc_year)
-         add_vaccdrug_campaign(config,camp,campaign_type='SMC', start_days=[smc_start],
-                               coverages=[row['coverage']],
-                               target_group={'agemin': row['agemin'],
-                                                'agemax': row['agemax']},
-                               receiving_drugs_event=True)  ## If False uses vaccSMC with automatic offset of 17 days, if True, uses vaccDrugSMC
-                          
+         add_vaccdrug_smc(camp,start_days=[smc_start],
+                          coverages=[row['coverage']],
+                          target_group={'agemin': row['agemin'],
+                                        'agemax': row['agemax']},
+                          receiving_vaccine_event="Received_SMC_Vacc", receiving_drugs_event="Received_SMC_Drug")                 
 
 
 def add_itns(camp,itn_df,itn_age,itn_season):

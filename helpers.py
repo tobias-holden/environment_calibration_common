@@ -17,7 +17,9 @@ import emodpy_malaria.malaria_config as conf
 import emodpy_malaria.malaria_config as malaria_config
 from emodpy_malaria.malaria_config import set_drug_param
 from emodpy_malaria.interventions.treatment_seeking import add_treatment_seeking
-from emodpy_malaria.interventions.drug_campaign import add_drug_campaign as dc
+from emodpy_malaria.interventions.drug_campaign import add_drug_campaign
+from emodpy_malaria.interventions.vaccine import add_scheduled_vaccine, add_triggered_vaccine
+from emodpy_malaria.interventions.common import add_triggered_campaign_delay_event
 from emodpy_malaria.interventions.usage_dependent_bednet import add_scheduled_usage_dependent_bednet 
 from emodpy_malaria.reporters.builtin import (
     add_event_recorder,
@@ -266,14 +268,14 @@ def add_health_seeking(camp,hs_df):
 #     separate_start_days = start_day + np.array([0] + list(np.cumsum(separate_durations)))
 #     for dd in range(len(separate_durations)):
 #         if nmf_child * hs_child > 0:
-#             dc(camp, 'MSAT', drug_code=drug_code, start_days=[separate_start_days[dd]],
+#             add_drug_campaign(camp, 'MSAT', drug_code=drug_code, start_days=[separate_start_days[dd]],
 #                               target_group={'agemin': 0, 'agemax': 5},
 #                               coverage=nmf_child * hs_child,
 #                               repetitions=separate_durations[dd], tsteps_btwn_repetitions=1,
 #                               diagnostic_type='PF_HRP2', diagnostic_threshold=5,
 #                               receiving_drugs_event_name='Received_NMF_Treatment')
 #         if nmf_adult * hs_adult > 0:
-#             dc(camp, 'MSAT', drug_code=drug_code, start_days=[separate_start_days[dd]],
+#             add_drug_campaign(camp, 'MSAT', drug_code=drug_code, start_days=[separate_start_days[dd]],
 #                               target_group={'agemin': 5, 'agemax': 120},
 #                               coverage=nmf_adult * hs_adult,
 #                               repetitions=separate_durations[dd], tsteps_btwn_repetitions=1,
@@ -325,7 +327,7 @@ def add_nmf_hs_from_file(camp, row, nmf_row):
             separate_start_days = sim_day + np.array([0] + list(np.cumsum(separate_durations)))
             for dd in range(len(separate_durations)):
                 if nmf_rate > 0:
-                    dc(camp, 'MSAT', drug_code=drug_code, start_days=[separate_start_days[dd]],
+                    add_drug_campaign(camp, 'MSAT', drug_code=drug_code, start_days=[separate_start_days[dd]],
                                       target_group={'agemin': hs_agemin, 'agemax': hs_agemax},
                                       coverage=nmf_rate*hs_coverage,
                                       repetitions=separate_durations[dd], tsteps_btwn_repetitions=1,

@@ -184,7 +184,7 @@ def add_vaccdrug_campaign(campaign,campaign_type: str = 'SMC', start_days: list 
 
 def make_vehicle_drug(drug_box_day: float = 0, drug_irbc_killing: float = 0, drug_hep_killing: float = 0):
     if drug_box_day:
-        set_drug_param( "Vehicle", "Drug_Decay_T1", drug_box_day)
+        set_drug_param(drug_name="Vehicle",parameter="Drug_Decay_T1",value=drug_box_day)
         set_drug_param( "Vehicle", "Drug_Decay_T2", drug_box_day)
     if drug_irbc_killing:
         set_drug_param("Vehicle", "Max_Drug_IRBC_Kill", drug_irbc_killing)

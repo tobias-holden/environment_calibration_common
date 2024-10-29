@@ -340,12 +340,12 @@ def build_standard_campaign_object(manifest):
 
 def make_vehicle_drug(config,drug_box_day: float = 0, drug_irbc_killing: float = 0, drug_hep_killing: float = 0):
     if drug_box_day:
-        set_drug_param(drug_name="Vehicle",parameter="Drug_Decay_T1",value=drug_box_day)
-        set_drug_param(drug_name="Vehicle",parameter="Drug_Decay_T2",value=drug_box_day)
+        set_drug_param(config,drug_name="Vehicle",parameter="Drug_Decay_T1",value=drug_box_day)
+        set_drug_param(config,drug_name="Vehicle",parameter="Drug_Decay_T2",value=drug_box_day)
     if drug_irbc_killing:
-        set_drug_param(drug_name="Vehicle",parameter="Max_Drug_IRBC_Kill",value=drug_irbc_killing)
+        set_drug_param(config,drug_name="Vehicle",parameter="Max_Drug_IRBC_Kill",value=drug_irbc_killing)
     if drug_hep_killing:
-        set_drug_param(drug_name="Vehicle",parameter="Drug_Hepatocyte_Killrate",value=drug_hep_killing)
+        set_drug_param(config,drug_name="Vehicle",parameter="Drug_Hepatocyte_Killrate",value=drug_hep_killing)
 
     return {'drug_box_day': drug_box_day,
             'drug_irbc_killing': drug_irbc_killing,

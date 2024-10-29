@@ -329,7 +329,7 @@ def build_standard_campaign_object(manifest):
     return campaign
 
 
-def build_camp(site, coord_df=None):
+def build_camp(config,site, coord_df=None):
     """
     Build a campaign input file for the DTK using emod_api.
     Right now this function creates the file and returns the filename. If calling code just needs an asset that's fine.
@@ -368,7 +368,7 @@ def build_camp(site, coord_df=None):
         smc_df = pd.DataFrame()
     if not smc_df.empty:
         # smc for children under 5 (and some leak into 5 year-olds at 50% of the 0-5 coverage)
-        add_smc(camp,smc_df)
+        add_smc(config,camp,smc_df)
 
     # ITNS
     itn_df = pd.DataFrame()
@@ -429,7 +429,7 @@ set_simulation_scenario_for_matched_site = partial(set_simulation_scenario, csv_
 set_simulation_scenario_for_characteristic_site = partial(set_simulation_scenario, csv_path=manifest.sweep_sim_coordinator_path)
 
 
-def add_smc(camp,smc_df):
+def add_smc(config,camp,smc_df):
     coord_df=load_coordinator_df(characteristic=False, set_index=True)
     sim_start_yr = int(coord_df.at['simulation_start_year','value'])
     for r, row in smc_df.iterrows():
@@ -437,7 +437,7 @@ def add_smc(camp,smc_df):
          smc_month=int(row['month'])
          smc_day=int(row['day'])
          smc_start = smc_year*365 + day_of_year(smc_month,smc_day,smc_year)
-         add_vaccdrug_campaign(camp,campaign_type='SMC', start_days=[smc_start],
+         add_vaccdrug_campaign(config,camp,campaign_type='SMC', start_days=[smc_start],
                                coverages=[row['coverage']],
                                target_group={'agemin': row['agemin'],
                                                 'agemax': row['agemax']},

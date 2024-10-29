@@ -119,7 +119,9 @@ def set_param_fn(config):
     )
     config.parameters.Enable_Demographics_Birth = 1
     config.parameters.Enable_Natural_Mortality = 1
-    config.parameters.Custom_Individual_Events = ["Received_Treatment","Received_SMC","Bednet_Using","Bednet_Discarded","Bednet_Got_New_One"]
+    config.parameters.Custom_Individual_Events = ["Received_Treatment","Received_Vehicle",
+                                                  "Reveived_SMC_Drug","Received_SMC_Vaccine",
+                                                  "Bednet_Using","Bednet_Discarded","Bednet_Got_New_One"]
     
     # SMC parameters
     drug_param_dict = {'drug_box_day': 2.0, 'drug_irbc_killing': 10.8, 'drug_hep_killing': 3.64}
@@ -588,7 +590,7 @@ def add_smc(camp,smc_df):
                           coverages=[row['coverage']],
                           target_group={'agemin': row['agemin'],
                                         'agemax': row['agemax']},
-                          receiving_vaccine_event="Received_SMC_Vacc", receiving_drugs_event="Received_SMC_Drug")                 
+                          receiving_vaccine_event="Received_SMC_Vaccine", receiving_drugs_event="Received_SMC_Drug")                 
 
 
 def add_itns(camp,itn_df,itn_age,itn_season):

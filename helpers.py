@@ -15,6 +15,7 @@ import emodpy_malaria.demographics.MalariaDemographics as Demographics
 from emod_api.demographics.DemographicsTemplates import CrudeRate   
 import emodpy_malaria.malaria_config as conf
 import emodpy_malaria.malaria_config as malaria_config
+from emodpy_malaria.malaria_config import set_drug_param
 from emodpy_malaria.interventions.treatment_seeking import add_treatment_seeking
 from emodpy_malaria.interventions.drug_campaign import add_drug_campaign as dc
 from emodpy_malaria.interventions.usage_dependent_bednet import add_scheduled_usage_dependent_bednet 
@@ -25,6 +26,7 @@ from emodpy_malaria.reporters.builtin import (
     add_report_vector_stats
 )
 # from within environment_calibration_common submodule
+
 #from malaria_vaccdrug_campaigns import add_vaccdrug_campaign
 # from source 'simulations' directory
 sys.path.append("../simulations")

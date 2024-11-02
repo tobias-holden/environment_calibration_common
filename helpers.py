@@ -612,6 +612,8 @@ def generate_demographics():
                                                      CrudeRate(float(BR)))
     print("Amending Birth Rate")
     demog.SetBirthRate(CrudeRate(float(BR) * int(population)))
+    # Set risk distribution - exponential
+    # demog.SetHeteroRiskExponDist(mean=1.0)
     with open(f"../simulation_inputs/demographics_files/{site}_demographics.json", "w") as outfile:
         json.dump(demog.to_dict(), outfile, indent=3, sort_keys=True)
     print(f"Saved to ../simulation_inputs/demographics_files/{site}_demographics.json")

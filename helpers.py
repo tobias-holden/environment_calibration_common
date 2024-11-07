@@ -612,8 +612,6 @@ def generate_demographics():
                                                      CrudeRate(float(BR)))
     print("Amending Birth Rate")
     demog.SetBirthRate(CrudeRate(float(BR) * int(population)))
-    # Set risk distribution - exponential
-    # demog.SetHeteroRiskExponDist(mean=1.0)
     with open(f"../simulation_inputs/demographics_files/{site}_demographics.json", "w") as outfile:
         json.dump(demog.to_dict(), outfile, indent=3, sort_keys=True)
     print(f"Saved to ../simulation_inputs/demographics_files/{site}_demographics.json")
@@ -625,6 +623,8 @@ def extract_climate(flatten_temp=True):
     from emodpy_malaria.weather import (generate_weather, weather_to_csv, WeatherVariable, 
                                         csv_to_weather)
     coord_df=load_coordinator_df(characteristic=False, set_index=True)
+    coord_df=coord_df[['value']]
+    #print(coord_df)
     # ---| Request weather files |---
     site = coord_df.at['site','value']
     start_yr = int(coord_df.at['climate_start_year','value'])
@@ -633,8 +633,9 @@ def extract_climate(flatten_temp=True):
     outdir = os.path.join('../simulation_inputs/site_climate', site)
     if not os.path.exists(extractdir):
         os.makedirs(extractdir)
-    site_climate=coord_df.transpose()
+    site_climate=coord_df.transpose().reset_index()
     site_climate = site_climate[['lon','lat','nodes']]
+    #print(site_climate)
     site_climate.to_csv(f"{manifest.simulation_input_filepath}/{site}_climate.csv")
     weather_dir = extractdir
     startdate = start_yr * 1000 + 1

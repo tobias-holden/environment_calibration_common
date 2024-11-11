@@ -49,15 +49,17 @@ def analyze_experiment(platform, expid, wdir):
     if coord_df.at['prevalence_comparison','value']:
         prevalence_df = pd.read_csv(os.path.join(manifest.base_reference_filepath,
                                                     coord_df.at['prevalence_comparison_reference','value']))
-        prevalence_start = int(prevalence_df['year'].min()) - sim_start_year
-        prevalence_end = int(prevalence_df['year'].max()) - sim_start_year
         if(coord_df.at['prevalence_comparison_diagnostic','value']=="PCR"):
+            prevalence_start = int(prevalence_df['year'].min()) - sim_start_year
+            prevalence_end = int(prevalence_df['year'].max()) - sim_start_year
             analyzers.append(InsetChartAnalyzer(sweep_variables=sweep_variables,
                                                 working_dir=wdir,
                                                 start_day=prevalence_start*365,
                                                 end_day = 365+prevalence_end*365,
                                                 channels=["PCR Parasite Prevalence","Daily EIR"]))
         if coord_df.at['prevalence_comparison_diagnostic','value']=="Microscopy":
+            prevalence_start = int(prevalence_df['year'].min())
+            prevalence_end = int(prevalence_df['year'].max())
             if coord_df.at['prevalence_comparison_frequency','value']=="monthly":
                 print(f"Prevalence: {prevalence_start} to {prevalence_end}")
                 analyzers.append(MonthlyPfPRAnalyzer(sweep_variables=sweep_variables,

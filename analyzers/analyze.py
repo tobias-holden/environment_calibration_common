@@ -41,11 +41,16 @@ def analyze_experiment(platform, expid, wdir):
         os.makedirs(wdir)
     coord_df = load_coordinator_df()
     sim_start_year = int(coord_df.at['simulation_start_year','value'])
-    
+    sim_years = int(coord_df.at['simulation_years','value'])
     analyzers = []
     # custom analyzers
     sweep_variables = ['Run_Number', 'Sample_ID']
-    
+    # EIR analyzer
+    analyzers.append(InsetChartAnalyzer(sweep_variables=sweep_variables,
+                                                working_dir=wdir,
+                                                start_day=min(0,(sim_years-10)*365),
+                                                end_day = sim_years*365,
+                                                channels=["Daily EIR"]))
     if coord_df.at['prevalence_comparison','value']:
         prevalence_df = pd.read_csv(os.path.join(manifest.base_reference_filepath,
                                                     coord_df.at['prevalence_comparison_reference','value']))

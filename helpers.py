@@ -152,7 +152,7 @@ def add_outputs(task, site):
                                                     coord_df.at['prevalence_comparison_reference','value']))
             prevalence_agebins =  sorted([float(a) for a in prevalence_df['age'].unique()])
             first_year = int(prevalence_df['year'].min()) - sim_start_year
-            last_year = int(prevalence_df['year'].max()) - sim_start_year
+            last_year = int(prevalence_df['year'].max()) - sim_start_year + 1
             
             # Logical bounds on years to request
             if first_year < 0:

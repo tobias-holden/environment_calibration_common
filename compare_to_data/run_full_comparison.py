@@ -18,7 +18,7 @@ sns.set_context("talk")
 sns.set_style("white")
 # from within compare_to_data
 sys.path.append(os.path.dirname(__file__))
-from calculate_all_scores import  compute_all_scores, load_case_data
+from calculate_all_scores import  compute_all_scores, load_case_data, load_prevalence_data
 # from .within environment_calibration_common submodule
 sys.path.append('../')
 from helpers import load_coordinator_df
@@ -121,35 +121,45 @@ def plot_incidence(site="",plt_dir=os.path.join(manifest.simulation_output_filep
 def plot_pfpr_microscopy(site="",plt_dir=os.path.join(manifest.simulation_output_filepath,"_plots"),wdir='.',agebin=100):
     
     coord_df = load_coordinator_df()
-    start_year = coord_df.at['simulation_start_year','value']
+    start_year = int(coord_df.at['simulation_start_year','value'])
     
    # load reference data
     refpfpr = load_prevalence_data(site)
-    refpfpr = refpfpr[refpfpr['agebin'] == agebin]
+    refpfpr = refpfpr[refpfpr['age'] == agebin]
     # convert reference_pcr 'year' to start at 0, like simulations
-    refpfpr['year'] = [(y - start_year) for y in refpfpr['year']]
+    refpfpr['year'] = [int(y) for y in refpfpr['year']]
+    refpfpr['date'] = refpfpr['month'].map(str)+ '-' +refpfpr['year'].map(str)
+    refpfpr['date'] = pd.to_datetime(refpfpr['date'], format='%m-%Y').dt.strftime('%m-%Y')
+    refpfpr=refpfpr.sort_values(['year','month'])
+
+
+
     sim_pfpr = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site,"PfPR_monthly.csv"))
     # filter to age of interest
     sim_pfpr = sim_pfpr[sim_pfpr['agebin']==agebin]
     # get mean PfPR by month, year, and Sample_ID across runs
-    sim_pfpr = sim_pfpr.groupby(['Sample_ID', 'month','year'])['prevalence'].agg(np.nanmean).reset_index()
-    sim_pfpr = sim_pfpr[['year','month','Sample_ID','prevalence']]
-    # merge simulated normalized monthly incidence with reference data on ['month']
-    score = sim_pfpr.merge(refpfpr, on =['month','year'], how="left")
-    
-    print(score)
-    exit(1)
+    sim_pfpr = sim_pfpr.groupby(['Sample_ID', 'month','Year'])['PfPR'].agg(np.nanmean).reset_index()
+    sim_pfpr = sim_pfpr[['Year','month','Sample_ID','PfPR']]
+
     # Get best parameter set
-    best = pd.read_csv(os.path.join(wdir,"emod.best.csv"))
-    best = best['param_set'][0]
+    best=1
+    if os.path.exists(os.path.join(wdir,"emod.best.csv")) :
+        best = pd.read_csv(os.path.join(wdir,"emod.best.csv"))
+        best = best['param_set'][0]
+
+    sim_pfpr = sim_pfpr[sim_pfpr['Sample_ID']==best]
     
+    sim_pfpr['date'] = sim_pfpr['month'].map(str)+ '-' +sim_pfpr['Year'].map(str)
+    sim_pfpr['date'] = pd.to_datetime(sim_pfpr['date'], format='%m-%Y').dt.strftime('%m-%Y')
+    sim_pfpr=sim_pfpr.sort_values(['Year','month'])
     # Plot normalized incidence curve vs. reference data
     plt.figure(figsize=(6, 6), dpi=300, tight_layout=True)
-    plt.plot(sim_df['date'],sim_df['PfPR by Microscopy'], label="Simulation")
-    plt.scatter(refpcr['date'], refpcr['ref_prevalence'], label="Reference", color='k')
+    plt.plot(sim_pfpr['date'],sim_pfpr['PfPR'], label="Simulation")
+    plt.scatter(refpfpr['date'], refpfpr['prevalence'], label="Reference", color='k')
+    plt.xticks(refpfpr['date'], rotation=45)
     plt.legend()
     plt.xlabel("Date")
-    plt.ylabel("PCR Parasite Prevalence")
+    plt.ylabel("PfPR by Microscopy")
     plt.ylim(0, 1)
     plt.gcf().autofmt_xdate()
     plt.show()
@@ -249,12 +259,15 @@ def plot_allAge_prevalence(site="",plt_dir=os.path.join(manifest.simulation_outp
 
 if __name__ == "__main__":
 
-    workdir="/projects/b1139/environment_calibration/simulations/output/test_prod_Nanoro_short/LF_0/"
+    workdir="/projects/b1139/environment_calibration/simulations/output/test_pfpr/"
     plt_dir=workdir
     site="Nanoro"
     agebin=100
     coord_df = load_coordinator_df()
     start_year = coord_df.at['simulation_start_year','value']
+    
+    plot_pfpr_microscopy(site=site,plt_dir=plt_dir,wdir=workdir,agebin=100)
+    
     
     # Y0=compute_scores_across_site(site)
     # print(Y0)

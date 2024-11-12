@@ -116,6 +116,47 @@ def plot_incidence(site="",plt_dir=os.path.join(manifest.simulation_output_filep
     plt.savefig(os.path.join(plt_dir,f"incidence_{site}.png"))
     plt.clf()
     
+    
+
+def plot_pfpr_microscopy(site="",plt_dir=os.path.join(manifest.simulation_output_filepath,"_plots"),wdir='.',agebin=100):
+    
+    coord_df = load_coordinator_df()
+    start_year = coord_df.at['simulation_start_year','value']
+    
+   # load reference data
+    refpfpr = load_prevalence_data(site)
+    refpfpr = refpfpr[refpfpr['agebin'] == agebin]
+    # convert reference_pcr 'year' to start at 0, like simulations
+    refpfpr['year'] = [(y - start_year) for y in refpfpr['year']]
+    sim_pfpr = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site,"PfPR_monthly.csv"))
+    # filter to age of interest
+    sim_pfpr = sim_pfpr[sim_pfpr['agebin']==agebin]
+    # get mean PfPR by month, year, and Sample_ID across runs
+    sim_pfpr = sim_pfpr.groupby(['Sample_ID', 'month','year'])['prevalence'].agg(np.nanmean).reset_index()
+    sim_pfpr = sim_pfpr[['year','month','Sample_ID','prevalence']]
+    # merge simulated normalized monthly incidence with reference data on ['month']
+    score = sim_pfpr.merge(refpfpr, on =['month','year'], how="left")
+    
+    print(score)
+    exit(1)
+    # Get best parameter set
+    best = pd.read_csv(os.path.join(wdir,"emod.best.csv"))
+    best = best['param_set'][0]
+    
+    # Plot normalized incidence curve vs. reference data
+    plt.figure(figsize=(6, 6), dpi=300, tight_layout=True)
+    plt.plot(sim_df['date'],sim_df['PfPR by Microscopy'], label="Simulation")
+    plt.scatter(refpcr['date'], refpcr['ref_prevalence'], label="Reference", color='k')
+    plt.legend()
+    plt.xlabel("Date")
+    plt.ylabel("PCR Parasite Prevalence")
+    plt.ylim(0, 1)
+    plt.gcf().autofmt_xdate()
+    plt.show()
+    plt.savefig(os.path.join(plt_dir,f"prevalence_{site}.png"))
+    plt.clf() 
+
+    
 def save_rangeEIR(site="", wdir="./"):
     # Get best parameter set
     best = pd.read_csv(f"{wdir}/emod.best.csv")

@@ -175,7 +175,7 @@ def save_rangeEIR(site="", wdir="./"):
     # Load simulation InsetChart for Daily EIR values
     # Note: Would be better to choose this version only if InsetChart is required for other comparisons
     #       Could use summary report channel instead
-    sim_df = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site,"InsetChart.csv"))
+    sim_df = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site,"InsetChart_EIR.csv"))
     sim_df = sim_df.rename(columns={'Sample_ID':'param_set'})
     # Filter to best parameter set
     sim_df = sim_df[sim_df['param_set']==best]
@@ -215,7 +215,7 @@ def plot_allAge_prevalence(site="",plt_dir=os.path.join(manifest.simulation_outp
   
     coord_df=load_coordinator_df()
     start_year=int(coord_df.at['simulation_start_year','value'])
-    sim_df = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site,"InsetChart.csv"))
+    sim_df = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site,"InsetChart_PCR.csv"))
     
     sim_df = sim_df.rename(columns={'Sample_ID':'param_set'})
   

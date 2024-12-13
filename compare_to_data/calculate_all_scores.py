@@ -42,19 +42,28 @@ def load_prevalence_data(site):
     refprev = refprev[refprev['site']==site]
     return(refprev)
 
-def prepare_inset_chart_data(site):
+def prepare_inset_chart_data_PCR(site):
     ### Load InsetChart.csv
-    ic = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site, "InsetChart.csv"))
+    ic = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site, "InsetChart_PCR.csv"))
     # convert Time to year and month
     ic['year'] = [np.trunc(t/365) for t in ic['time']]
     ic['month'] = ic.apply(lambda row: np.trunc((row['time'] - (row['year']*365))/30.001)+1, axis=1)
     ic = ic[ic['month']<=12]
     return(ic)
   
+def prepare_inset_chart_data_EIR(site):
+    ### Load InsetChart.csv
+    ic = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site, "InsetChart_EIR.csv"))
+    # convert Time to year and month
+    ic['year'] = [np.trunc(t/365) for t in ic['time']]
+    ic['month'] = ic.apply(lambda row: np.trunc((row['time'] - (row['year']*365))/30.001)+1, axis=1)
+    ic = ic[ic['month']<=12]
+    return(ic)  
+  
 def compare_all_age_PCR_prevalence(site):
     #### SCORE - Monthly PCR Parasite Prevalence ####
     #################################################
-    ic = prepare_inset_chart_data(site)
+    ic = prepare_inset_chart_data_PCR(site)
     refpcr = load_prevalence_data(site)
     # get average prevalence from insetchart for each year/month/sample_id 
     score3 = ic.groupby(['Sample_ID','year','month']).agg(prevalence=('PCR Parasite Prevalence', 'mean')).reset_index()
@@ -76,7 +85,7 @@ def compare_PfPR_prevalence(site,agebin):
     refpfpr = load_prevalence_data(site)
     refpfpr = refpfpr[refpfpr['age'] == agebin]
     # convert reference_pcr 'year' to start at 0, like simulations
-    refpfpr['year'] = [(y - start_year) for y in refpfpr['year']]
+    refpfpr['year'] = [(y) for y in refpfpr['year']]
     sim_pfpr = pd.read_csv(os.path.join(manifest.simulation_output_filepath,site,"PfPR_monthly.csv"))
     # filter to age of interest
     sim_pfpr = sim_pfpr[sim_pfpr['agebin']==agebin]
@@ -95,7 +104,7 @@ def compare_PfPR_prevalence(site,agebin):
 
 
 def check_EIR_threshold(site):
-    ic = prepare_inset_chart_data(site)
+    ic = prepare_inset_chart_data_EIR(site)
     # get maximum year of simulation
     last_year= max(ic['year'])
     

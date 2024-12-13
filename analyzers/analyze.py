@@ -17,7 +17,9 @@ from .analyzer_collection import (
     InsetChartAnalyzer,
     EventReporterSummaryAnalyzer,
     NodeDemographicsAnalyzer,
-    VectorStatsAnalyzer
+    VectorStatsAnalyzer,
+    EIRAnalyzer,
+    PCRAnalyzer
 )
 # from within environment_calibration_common submodule
 sys.path.append("../")
@@ -46,7 +48,7 @@ def analyze_experiment(platform, expid, wdir):
     # custom analyzers
     sweep_variables = ['Run_Number', 'Sample_ID']
     # EIR analyzer
-    analyzers.append(InsetChartAnalyzer(sweep_variables=sweep_variables,
+    analyzers.append(EIRAnalyzer(sweep_variables=sweep_variables,
                                                 working_dir=wdir,
                                                 start_day=min(0,(sim_years-10)*365),
                                                 end_day = sim_years*365,
@@ -57,11 +59,11 @@ def analyze_experiment(platform, expid, wdir):
         if(coord_df.at['prevalence_comparison_diagnostic','value']=="PCR"):
             prevalence_start = int(prevalence_df['year'].min()) - sim_start_year
             prevalence_end = int(prevalence_df['year'].max()) - sim_start_year
-            analyzers.append(InsetChartAnalyzer(sweep_variables=sweep_variables,
+            analyzers.append(PCRAnalyzer(sweep_variables=sweep_variables,
                                                 working_dir=wdir,
                                                 start_day=prevalence_start*365,
                                                 end_day = 365+prevalence_end*365,
-                                                channels=["PCR Parasite Prevalence","Daily EIR"]))
+                                                channels=["PCR Parasite Prevalence"]))
         if coord_df.at['prevalence_comparison_diagnostic','value']=="Microscopy":
             prevalence_start = int(prevalence_df['year'].min())
             prevalence_end = int(prevalence_df['year'].max())
